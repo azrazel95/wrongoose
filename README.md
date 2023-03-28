@@ -15,7 +15,7 @@
 
 a social network api backbone
 
-
+[check out the video walkthrough!](https://drive.google.com/file/d/1ibwOUiDcM5PLm5YNWIZ1HaEik3dJLeJe/view)
 
 ## Usage
 
