@@ -1,13 +1,14 @@
+//importing our models
 const { Thought, User, Reaction } = require('../models');
-
+//exporting our crud functions
 module.exports = {
-  // Get all Thoughts
+  // Gets all thoughts
   getThoughts(req, res) {
     Thought.find()
       .then((thoughts) => res.json(thoughts))
       .catch((err) => res.status(500).json(err));
   },
-  // Get a Thought
+  // gets a thought by id
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.id })
       .select('-__v')
@@ -18,7 +19,7 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
-  // Create a Thought
+  // posts a new thought and pushes it to the user model
   createThought(req, res) {
     Thought.create(req.body)
       .then((thought) => {
@@ -39,26 +40,16 @@ module.exports = {
         res.status(500).json(err);
       });
   },
-  updateThought(req, res) {
-    Thought.findOneAndUpdate(
-      { _id: req.params.id },
-      { $set: req.body },
-      { runValidators: true, new: true }
-    )
-      .then((thought) =>
-        !user
-          ? res.status(404).json({ message: 'No thought found!' })
-          : res.json(thought)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
-  // Delete a Thought
+
+ 
+  // Ddeletes a thought by id
  deleteThought(req, res) {
   Thought.findOneAndDelete({ _id: req.params.id })
     .then((thought) => {
       if (!thought) {
         return res.status(404).json({ message: 'No Thought with that ID' });
       }
+      // if it finds reactions, it will delete them. otherwise it will delete the thought but say it couldnt find any. this was aweful
       if (!thought.reactions || thought.reactions.length === 0) {
         return res.json({ message: 'Thought deleted! No reactions found.' });
       }
@@ -69,21 +60,21 @@ module.exports = {
     })
     .catch((err) => res.status(500).json(err));
 },
-  // Update a Thought
-  updateThought(req, res) {
-    Thought.findOneAndUpdate(
-      { _id: req.params.id },
-      { $set: req.body },
-      { runValidators: true, new: true }
+ // updates a thought by its id
+ updateThought(req, res) {
+  Thought.findOneAndUpdate(
+    { _id: req.params.id },
+    { $set: req.body },
+    { runValidators: true, new: true }
+  )
+    .then((thought) =>
+      !user
+        ? res.status(404).json({ message: 'No thought found!' })
+        : res.json(thought)
     )
-      .then((thought) =>
-        !thought
-          ? res.status(404).json({ message: 'No Thought with this id!' })
-          : res.json(thought)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
-
+    .catch((err) => res.status(500).json(err));
+},
+//adds a reaction to the post
   addReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.id },
@@ -99,7 +90,7 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
-  
+  // removes a reaction to the post
   removeReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.id },
@@ -115,6 +106,3 @@ module.exports = {
   }
 };
 
-  
-
-//lasvegas@indiecampers.com

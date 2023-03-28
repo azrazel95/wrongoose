@@ -1,9 +1,10 @@
+//importing our mongoose and models
 const { ObjectId } = require('mongoose').Types;
 const { User, Thought, Reaction } = require('../models');
 
-
+// exporting our functions
 module.exports = {
-  // Get all users
+  // gets all users
   getUsers(req, res) {
     User.find()
       .then(async (users) => {
@@ -17,7 +18,7 @@ module.exports = {
         return res.status(500).json(err);
       });
   },
-  // Get a single user
+  // gets one user by id
   getSingleUser(req, res) {
     User.findOne({ _id: req.params.id })
       .select('-__v')
@@ -32,7 +33,7 @@ module.exports = {
         return res.status(500).json(err);
       });
   },
-  // create a new user
+  // posts a new user
   createUser(req, res) {
     User.create(req.body)
       .then((user) => res.json(user))
@@ -51,7 +52,7 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
-  // Delete a user and remove them from the thought
+  // deletes a user
   deleteUser(req, res) {
     User.findOneAndRemove({ _id: req.params.id })
       .then((user) =>
@@ -75,9 +76,8 @@ module.exports = {
         res.status(500).json(err);
       });
   },
+  // adds a friend to the friends list
   addFriend(req, res) {
-    console.log('You are adding an reaction');
-    console.log(req.body);
     User.findOneAndUpdate(
       { _id: req.params.id },
       { $addToSet: { friends: req.params.friendid } },
@@ -92,7 +92,7 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
-  
+  // removes a friend from the friends list
   deleteFriend(req, res) {
     User.findOneAndUpdate(
       { _id: req.params.id },

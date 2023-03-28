@@ -1,3 +1,4 @@
+// importing our models and the reaction schema
 const User = require('./User');
 const Thought = require('./Thought');
 const Reaction = require('./Reaction');
