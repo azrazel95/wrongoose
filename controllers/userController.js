@@ -21,13 +21,12 @@ module.exports = {
   getSingleUser(req, res) {
     User.findOne({ _id: req.params.id })
       .select('-__v')
-      .then(async (user) =>
-        !user
-          ? res.status(404).json({ message: 'No user with that ID' })
-          : res.json({
-              user
-            })
-      )
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ message: 'No user with that ID' });
+        }
+        return res.json({ user });
+      })
       .catch((err) => {
         console.log(err);
         return res.status(500).json(err);
@@ -39,22 +38,35 @@ module.exports = {
       .then((user) => res.json(user))
       .catch((err) => res.status(500).json(err));
   },
+  updateUser(req, res) {
+    User.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: req.body },
+      { runValidators: true, new: true }
+    )
+      .then((user) =>
+        !user
+          ? res.status(404).json({ message: 'No User with this id!' })
+          : res.json(user)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
   // Delete a user and remove them from the thought
   deleteUser(req, res) {
     User.findOneAndRemove({ _id: req.params.id })
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No such user exists' })
-          : thought.findOneAndUpdate(
+          : User.findOneAndUpdate(
               { users: req.params.id },
               { $pull: { users: req.params.id } },
               { new: true }
             )
       )
-      .then((thought) =>
-        !thought
+      .then((user) =>
+        !user
           ? res.status(404).json({
-              message: 'user deleted, but no thoughts found',
+              message: 'user deleted, but no users found',
             })
           : res.json({ message: 'user successfully deleted' })
       )
@@ -76,7 +88,7 @@ module.exports = {
           ? res
               .status(404)
               .json({ message: 'No user found with that ID :(' })
-          : res.json(thought)
+          : res.json(user)
       )
       .catch((err) => res.status(500).json(err));
   },
@@ -84,14 +96,14 @@ module.exports = {
   deleteFriend(req, res) {
     User.findOneAndUpdate(
       { _id: req.params.id },
-      { $pull: { friends: { friendid: req.params.friendid } } },
+      { $pull: { friends:req.params.friendid  } },
       { runValidators: true, new: true }
     )
       .then((user) =>
         !user
           ? res
               .status(404)
-              .json({ message: 'No thought found with that ID :(' })
+              .json({ message: 'No user found with that ID :(' })
           : res.json(user)
       )
       .catch((err) => res.status(500).json(err));
