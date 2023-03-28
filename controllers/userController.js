@@ -19,7 +19,7 @@ module.exports = {
   },
   // Get a single user
   getSingleUser(req, res) {
-    User.findOne({ _id: req.params.userid })
+    User.findOne({ _id: req.params.id })
       .select('-__v')
       .then(async (user) =>
         !user
@@ -41,13 +41,13 @@ module.exports = {
   },
   // Delete a user and remove them from the thought
   deleteUser(req, res) {
-    User.findOneAndRemove({ _id: req.params.userId })
+    User.findOneAndRemove({ _id: req.params.id })
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No such user exists' })
           : thought.findOneAndUpdate(
-              { users: req.params.userId },
-              { $pull: { users: req.params.userId } },
+              { users: req.params.id },
+              { $pull: { users: req.params.id } },
               { new: true }
             )
       )
